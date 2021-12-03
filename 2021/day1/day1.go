@@ -52,10 +52,6 @@ func main() {
 	}
 	file.Close()
 
-	// for _, each_ln := range inputArr {
-	// 	fmt.Println(each_ln)
-	// }
-
 	resultDay1 := Day1(inputArr)
 	resultDay1_2 := Day1_2(inputArr)
 	fmt.Println(resultDay1)
