@@ -93,3 +93,59 @@ func TestDay12_Case4(t *testing.T) {
 	output := Day12(input)
 	assert.Equal(t, 5457, output, "they should be equal")
 }
+
+func TestDay12_1(t *testing.T) {
+	input := []string{
+		"start-A",
+		"start-b",
+		"A-c",
+		"A-b",
+		"b-d",
+		"A-end",
+		"b-end",
+	}
+	output := Day12_1(input)
+	assert.Equal(t, 36, output, "they should be equal")
+}
+
+func TestDay12_1_Case2(t *testing.T) {
+	input := []string{
+		"dc-end",
+		"HN-start",
+		"start-kj",
+		"dc-start",
+		"dc-HN",
+		"LN-dc",
+		"HN-end",
+		"kj-sa",
+		"kj-HN",
+		"kj-dc",
+	}
+	output := Day12_1(input)
+	assert.Equal(t, 103, output, "they should be equal")
+}
+
+func TestDay12_1_Case3(t *testing.T) {
+	input := []string{
+		"fs-end",
+		"he-DX",
+		"fs-he",
+		"start-DX",
+		"pj-DX",
+		"end-zg",
+		"zg-sl",
+		"zg-pj",
+		"pj-he",
+		"RW-he",
+		"fs-DX",
+		"pj-RW",
+		"zg-RW",
+		"start-pj",
+		"he-WI",
+		"zg-he",
+		"pj-fs",
+		"start-RW",
+	}
+	output := Day12_1(input)
+	assert.Equal(t, 3509, output, "they should be equal")
+}
