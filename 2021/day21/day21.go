@@ -59,10 +59,6 @@ RoundIteration:
 			if points[i] >= 1000 {
 				break RoundIteration
 			}
-
-			// DEBUG
-			// fmt.Printf("Player %v: position=%v, points=%v, dice=%v rolls=%v\n", i+1, startPositions[i], points[i], diceCounter, diceRollCounter[i])
-
 		}
 	}
 
@@ -74,11 +70,6 @@ RoundIteration:
 			minIndex = i
 		}
 	}
-
-	// DEBUG
-	// for i, _ := range input {
-	// 	fmt.Printf("Roll: %v, Points: %v\n", diceRollCounter[i], points[i])
-	// }
 
 	return points[minIndex] * totalDiceRollCounter
 }
