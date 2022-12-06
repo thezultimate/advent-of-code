@@ -1,24 +1,24 @@
 const day6Part1 = (input) => {
   let currentPosition = 4;
 
-  let lastFourteen = {};
+  let lastFour = {};
   let duplicate = false;
   for (let i = 0; i < 4; i++) {
     const currentChar = input[i];
-    if (lastFourteen[currentChar]) duplicate = true;
-    lastFourteen[currentChar] = true;
+    if (lastFour[currentChar]) duplicate = true;
+    lastFour[currentChar] = true;
   }
   if (!duplicate) return currentPosition;
 
   for (let i = 4; i < input.length; i++) {
     currentPosition++;
     const startIndex = i - 4 + 1;
-    lastFourteen = {};
+    lastFour = {};
     duplicate = false;
     for (let j = startIndex; j <= i; j++) {
       const currentChar = input[j];
-      if (lastFourteen[currentChar]) duplicate = true;
-      lastFourteen[currentChar] = true;
+      if (lastFour[currentChar]) duplicate = true;
+      lastFour[currentChar] = true;
     }
     if (!duplicate) return currentPosition;
   }
