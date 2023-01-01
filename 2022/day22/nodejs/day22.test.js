@@ -12,11 +12,3 @@ describe("day 22 part 1", () => {
     assert.equal(result, 6032);
   });
 });
-
-describe("day 22 part 2", () => {
-  it("case 1", () => {
-    const inputArr = [];
-    const result = day22Part2(inputArr);
-    assert.equal(result, 0);
-  });
-});
