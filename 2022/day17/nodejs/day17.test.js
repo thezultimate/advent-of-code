@@ -13,7 +13,7 @@ describe("day 17 part 1", () => {
 describe("day 17 part 2", () => {
   it("case 1", () => {
     const input = fs.readFileSync("input_test.txt", "utf8");
-    const result = day17Part2(input);
-    assert.equal(result, 0);
+    const result = day17Part2(input, 1000000000000);
+    assert.equal(result, 1514285714288);
   });
 });
