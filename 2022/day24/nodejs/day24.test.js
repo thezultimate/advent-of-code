@@ -13,8 +13,9 @@ describe("day 24 part 1", () => {
 
 describe("day 24 part 2", () => {
   it("case 1", () => {
-    const inputArr = [];
+    const input = fs.readFileSync("input_test.txt", "utf8");
+    const inputArr = input.split("\n");
     const result = day24Part2(inputArr);
-    assert.equal(result, 0);
+    assert.equal(result, 54);
   });
 });
