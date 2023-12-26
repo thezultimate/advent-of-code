@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 
 namespace Problem;
@@ -113,6 +114,105 @@ public class Problem
 
     public static long ProblemPart2(List<string> inputList)
     {
-        return 0;
+        var brickList = new List<(long, long, long, long, long, long)>();
+
+        foreach (var line in inputList)
+        {
+            var lineSplit = line.Split("~");
+            var startRange = lineSplit[0].Split(",");
+            var endRange = lineSplit[1].Split(",");
+            var brick = (
+                long.Parse(startRange[0]), long.Parse(endRange[0]), // x
+                long.Parse(startRange[1]), long.Parse(endRange[1]), // y
+                long.Parse(startRange[2]), long.Parse(endRange[2]) // z
+            );
+            brickList.Add(brick);
+        }
+
+        var brickListSortedByZAscending = brickList.OrderBy(x => x.Item5).ToList();
+
+        for (int i = 0; i < brickListSortedByZAscending.Count(); i++)
+        {
+            if (brickListSortedByZAscending[i].Item5 > 1) // Iterate through bricks that are not on the ground
+            {
+                var currentBrick = brickListSortedByZAscending[i];
+                long zBelow = currentBrick.Item5-1;
+                while (zBelow >= 1)
+                {
+                    bool isBlocked = false;
+                    for (int j = i-1; j >= 0; j--) // Iterate through below bricks, check if any is blocking
+                    {
+                        var previousBrick = brickListSortedByZAscending[j];
+                        if (IsBrickBlocking(previousBrick, currentBrick))
+                        {
+                            isBlocked = true;
+                            break; // Previous brick is blocking
+                        }
+                    }
+
+                    if (isBlocked)
+                        break;
+
+                    // Current brick is not blocked, move down one level
+                    currentBrick = (currentBrick.Item1, currentBrick.Item2, currentBrick.Item3, currentBrick.Item4, 
+                        currentBrick.Item5-1, currentBrick.Item6-1);
+                    brickListSortedByZAscending[i] = currentBrick;
+                    zBelow--;
+                }
+            }
+        }
+
+        var unsafeBricksIndexList = new List<int>();
+
+        for (int i = 0; i < brickListSortedByZAscending.Count()-1; i++) // Iterate through bricks from the lowest to be removed, the last one is assumed to be free
+        {
+            for (int j = i+1; j < brickListSortedByZAscending.Count(); j++) // Iterate through all bricks above
+            {
+                if (CanFallDown(j, i, brickListSortedByZAscending)) // Check if brick at j can fall down if brick at i is removed
+                {
+                    unsafeBricksIndexList.Add(i);
+                    break;
+                }
+            }
+        }
+
+        long fallingBricksCount = 0;
+
+        foreach (int unsafeBrickIndex in unsafeBricksIndexList)
+        {
+            var removedBricksIndexSet = new HashSet<int>{unsafeBrickIndex};
+            int highestIndex = unsafeBrickIndex;
+            for (int i = highestIndex+1; i < brickListSortedByZAscending.Count(); i++)
+            {
+                if (CanFallDown2(i, removedBricksIndexSet, brickListSortedByZAscending))
+                {
+                    fallingBricksCount++;
+                    removedBricksIndexSet.Add(i);
+                    highestIndex = i;
+                }
+            }
+        }
+
+        return fallingBricksCount;
+    }
+
+    public static bool CanFallDown2(int nextBrickIndex, HashSet<int> brickRemovedIndexSet, 
+        List<(long, long, long, long, long, long)> brickListSortedByZAscending)
+    {
+        var nextBrick = brickListSortedByZAscending[nextBrickIndex];
+        if (nextBrick.Item5 == 1)
+            return false; // Next brick is standing on the floor
+        
+        for (int i = nextBrickIndex-1; i >= 0; i--)
+        {
+            if (brickRemovedIndexSet.Contains(i))
+                continue; // Skip removed bricks, they can't block
+
+            var potentialBlockingBrick = brickListSortedByZAscending[i];
+            if (IsBrickBlocking(potentialBlockingBrick, nextBrick))
+                return false;
+        }
+
+        return true;
     }
 }
