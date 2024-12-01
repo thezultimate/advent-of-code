@@ -13,6 +13,7 @@ def problem_part2(input_left_list, input_right_list):
     for left_number in input_left_list:
         if left_number in similarity_occurrences_map:
             similarity_score += left_number * similarity_occurrences_map[left_number]
+            continue
         right_occurrences = 0
         for right_number in input_right_list:
             if left_number == right_number:
