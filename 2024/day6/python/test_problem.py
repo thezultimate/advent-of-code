@@ -16,7 +16,7 @@ class TestProblem(unittest.TestCase):
             "......#..."
         ]
         result = problem_part1(input_list)
-        self.assertEqual(result, 41)
+        self.assertEqual(result[0], 41)
 
 
     def test_problem_part2_test1(self):
