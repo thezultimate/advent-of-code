@@ -91,6 +91,19 @@ function problem_part2(input_vector)
         # println("Button vector: ", buttons_vector)
         # println("Joltage vector: ", joltage_vector)
 
+        # Build equations
+        equations = []
+        for i in eachindex(joltage_vector)
+            sum_indices = []
+            for j in eachindex(buttons_vector)
+                if i-1 in buttons_vector[j]
+                    push!(sum_indices, j)
+                end
+            end
+            push!(equations, sum_indices)
+        end
+        # println("Equations: ", equations)
+
         min_press = 999999999999
         max_digit = maximum(joltage_vector)
         buttons_length = length(buttons_vector)
@@ -105,19 +118,19 @@ function problem_part2(input_vector)
             # println("Current combination: ", current_combinations)
 
             # Process push button combination
-            joltage_vector_copy = fill(0, length(joltage_vector))
-            for i in eachindex(current_combinations)
-                current_push_count = current_combinations[i]
-                if current_push_count > 0
-                    # Push current_push_count times
-                    current_buttons_to_push = buttons_vector[i]
-                    for button_push in current_buttons_to_push
-                        joltage_vector_copy[button_push + 1] += current_push_count
-                    end
+            is_equations_satisfied = true
+            for i in eachindex(equations)
+                sum_value = 0
+                for btn_index in equations[i]
+                    sum_value += current_combinations[btn_index]
+                end
+                if sum_value != joltage_vector[i]
+                    # One of the equations is not satisfied
+                    is_equations_satisfied = false
+                    break
                 end
             end
-            # println("Joltage vector copy: ", joltage_vector_copy)
-            if joltage_vector_copy == joltage_vector
+            if is_equations_satisfied
                 sum_button_presses = sum(current_combinations)
                 # println("Found matching combination: ", current_combinations, " with total presses: ", sum_button_presses)
                 if sum_button_presses < min_press
@@ -125,6 +138,27 @@ function problem_part2(input_vector)
                     break
                 end
             end
+
+            # joltage_vector_copy = fill(0, length(joltage_vector))
+            # for i in eachindex(current_combinations)
+            #     current_push_count = current_combinations[i]
+            #     if current_push_count > 0
+            #         # Push current_push_count times
+            #         current_buttons_to_push = buttons_vector[i]
+            #         for button_push in current_buttons_to_push
+            #             joltage_vector_copy[button_push + 1] += current_push_count
+            #         end
+            #     end
+            # end
+            # # println("Joltage vector copy: ", joltage_vector_copy)
+            # if joltage_vector_copy == joltage_vector
+            #     sum_button_presses = sum(current_combinations)
+            #     # println("Found matching combination: ", current_combinations, " with total presses: ", sum_button_presses)
+            #     if sum_button_presses < min_press
+            #         min_press = sum_button_presses
+            #         break
+            #     end
+            # end
             
             # Enqueue new combinations
             for i in eachindex(current_combinations)
