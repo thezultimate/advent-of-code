@@ -1,4 +1,5 @@
 using DataStructures
+using SciPy.optimize: linprog
 
 function problem_part1(input_vector)
     total_min_presses = 0
@@ -70,7 +71,7 @@ function problem_part1(input_vector)
     return total_min_presses
 end
 
-# Part 2 works for test input but is too slow for real input
+# Part 2 Generating button combinations using BFS is too slow, use linear programming solver instead
 function problem_part2(input_vector)
     total_min_presses = 0
 
@@ -104,76 +105,32 @@ function problem_part2(input_vector)
         end
         # println("Equations: ", equations)
 
-        min_press = 999999999999
-        max_digit = maximum(joltage_vector)
-        buttons_length = length(buttons_vector)
-        buttons_press_combinations = zeros(Int, buttons_length)
-
-        # Generate button push combinations BFS
-        queue = Queue{Tuple{Vector{Int}, Int}}()
-        enqueue!(queue, (buttons_press_combinations, max_digit))
-        while !isempty(queue)
-            current = dequeue!(queue)
-            current_combinations = current[1]
-            # println("Current combination: ", current_combinations)
-
-            # Process push button combination
-            is_equations_satisfied = true
-            for i in eachindex(equations)
-                sum_value = 0
-                for btn_index in equations[i]
-                    sum_value += current_combinations[btn_index]
-                end
-                if sum_value != joltage_vector[i]
-                    # One of the equations is not satisfied
-                    is_equations_satisfied = false
-                    break
-                end
-            end
-            if is_equations_satisfied
-                sum_button_presses = sum(current_combinations)
-                # println("Found matching combination: ", current_combinations, " with total presses: ", sum_button_presses)
-                if sum_button_presses < min_press
-                    min_press = sum_button_presses
-                    break
-                end
-            end
-
-            # joltage_vector_copy = fill(0, length(joltage_vector))
-            # for i in eachindex(current_combinations)
-            #     current_push_count = current_combinations[i]
-            #     if current_push_count > 0
-            #         # Push current_push_count times
-            #         current_buttons_to_push = buttons_vector[i]
-            #         for button_push in current_buttons_to_push
-            #             joltage_vector_copy[button_push + 1] += current_push_count
-            #         end
-            #     end
-            # end
-            # # println("Joltage vector copy: ", joltage_vector_copy)
-            # if joltage_vector_copy == joltage_vector
-            #     sum_button_presses = sum(current_combinations)
-            #     # println("Found matching combination: ", current_combinations, " with total presses: ", sum_button_presses)
-            #     if sum_button_presses < min_press
-            #         min_press = sum_button_presses
-            #         break
-            #     end
-            # end
-            
-            # Enqueue new combinations
-            for i in eachindex(current_combinations)
-                current_combinations_copy = copy(current_combinations)
-                current_combinations_copy[i] += 1
-                if current_combinations_copy[i] <= max_digit && !((current_combinations_copy, max_digit) in queue)
-                    enqueue!(queue, (current_combinations_copy, max_digit))
-                end
+        # Build matrix
+        equations_matrix = zeros(Int, length(equations), length(buttons_vector))
+        for i in eachindex(equations)
+            for j in equations[i]
+                equations_matrix[i, j] = 1
             end
         end
 
-        # println("Minimum presses for line '", line, "': ", min_press)
+        coefficients_vector = ones(Int, length(buttons_vector))
+        
+        # println("Equations matrix: ")
+        # println(equations_matrix)
+        # println("Coefficients vector: ", coefficients_vector)
+        # println("Joltage vector: ", joltage_vector)
+        
+        # Use SciPy linprog to solve integer linear programming
+        res = linprog(coefficients_vector, A_eq=equations_matrix, b_eq=joltage_vector, integrality=true)
+        # println("Linprog result: ", res["x"])
+
+        min_press = round(Int, sum(res["x"]))
+        # println("Minimum presses:", min_press)
+
         total_min_presses += min_press
     end
 
     # println("Total minimum presses: ", total_min_presses)
+
     return total_min_presses
 end
